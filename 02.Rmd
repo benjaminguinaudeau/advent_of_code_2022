@@ -1,0 +1,75 @@
+---
+title: "Day 2"
+output: github_document
+date: "2022-12-03"
+---
+
+```{r}
+# Sys.setenv("ADVENT_COOKIE" = "<Dont Forget your cookie>")
+# devtools::install_github("benjaminguinaudeau/adventr")
+library(tidyverse)
+library(adventr)
+```
+
+
+## Level 1
+
+```{r}
+str <- adventr::read_advent(day = 2, year = 2022) %>%
+  setdiff("") %>%
+  glimpse
+
+decode <- function(x) str_replace_all(x, c("A|X" = "R", "B|Y" = "P", "C|Z" = "S"))
+
+add_score <- function(x) recode(x, "R" = 1, "P" = 2, "S" = 3)
+
+
+get_result <- function(x, y){
+  case_when(
+    x == y ~ 3, # Draw
+    x == "R" ~ 6 * (y == "S"), # If rock, then only points for the opponent when I played S
+    x == "P" ~ 6 * (y == "R"), 
+    x == "S" ~ 6 * (y == "P"),
+  )
+}
+
+dt <- tibble::tibble(raw = decode(str)) %>%
+  tidyr::separate(raw, into = c("opp", "me")) %>%
+  mutate(across(c(opp, me), add_score, .names = "{.col}_score"), 
+         opp_res = get_result(opp, me), 
+         me_res = 6 - opp_res) %>%
+  glimpse
+
+sum(dt$me_score) + sum(dt$me_res)
+
+# adventr::submit_advent(answer = 11475, day = 2, year = 2022, level = 1)
+
+```
+
+```{r}
+guess_missing_order <- function(x, y){
+  case_when(
+    y == "P" ~ x, # Y replaced by P, so P is draw
+    y == "R" & x == "P" ~ "R", # X replaced by R, R is a win for the opponent
+    y == "R" & x == "R" ~ "S",
+    y == "R" & x == "S" ~ "P",
+    y == "S" & x == "P" ~ "S", # Z replaced by S, S is a win for me
+    y == "S" & x == "R" ~ "P",
+    y == "S" & x == "S" ~ "R",
+  )
+}
+
+dt <- tibble::tibble(raw = decode(str)) %>%
+  tidyr::separate(raw, into = c("opp", "aim")) %>% 
+  # Replace the me-order by what it should be
+  mutate(me = guess_missing_order(opp, aim)) %>%
+  mutate(across(c(opp, me), add_score, .names = "{.col}_score"), 
+         opp_res = get_result(opp, me), 
+         me_res = 6 - opp_res)
+
+sum(dt$me_score) + sum(dt$me_res)
+
+# adventr::submit_advent(answer = 16862, day = 2, year = 2022, level = 2)
+```
+
+

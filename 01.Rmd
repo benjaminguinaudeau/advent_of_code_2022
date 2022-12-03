@@ -1,0 +1,45 @@
+---
+title: "Day 1"
+output: github_document
+date: "2022-12-03"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Sys.setenv("ADVENT_COOKIE" = "<Dont Forget your cookie>")
+# devtools::install_github("benjaminguinaudeau/adventr")
+library(tidyverse)
+library(adventr)
+```
+
+## Level 1
+
+```{r}
+str <- adventr::read_advent(day = 1, year = 2022) %>%
+  glimpse
+
+dt <- tibble::tibble(w = as.numeric(str)) %>%
+  mutate(elf_id = cumsum(is.na(w))) %>%
+  group_by(elf_id) %>%
+  summarise(t = sum(w, na.rm = T), .groups = "drop") 
+
+dt %>%
+  slice_max(t, n = 1)
+
+adventr::submit_advent(answer = 70720, day = 1, year = 2022, level = 1)
+```
+
+## Level 2
+
+```{r}
+dt %>%
+  slice_max(t, n = 3) %>%
+  summarise(sum(t))
+
+adventr::submit_advent(answer = 207148, day = 1, year = 2022, level = 2)
+```
+

@@ -1,0 +1,80 @@
+---
+title: "Day 3"
+output: github_document
+date: "2022-12-03"
+---
+
+```{r}
+# Sys.setenv("ADVENT_COOKIE" = "<Dont Forget your cookie>")
+# devtools::install_github("benjaminguinaudeau/adventr")
+library(tidyverse)
+library(adventr)
+```
+
+## Level 1
+
+
+```{r}
+str <- adventr::read_advent(day = 3, year = 2022) %>%
+  setdiff("") %>%
+  glimpse
+
+prio_dict <- bind_rows(
+  tibble::tibble(char = letters, prio = 1:26), 
+  tibble::tibble(char = LETTERS, prio = 27:52)
+)
+
+split_string_in_halve <- function(x, len){
+  # Extract the two compartiments by spliting string in half
+  # Pattern must be set dynamically as all string 
+  comps <- str_extract_all(
+    x, 
+    pattern = paste0(".{", len/2, "}")
+  )[[1]]
+  
+  as_tibble(t(comps))
+}
+
+lev1 <- map2_dfr(str, str_length(str), split_string_in_halve) %>%
+  mutate(com_char = map2_chr(V1, V2,~{
+    # Extract from second half any character appearing in first half
+    str_extract(.y, paste0("[", .x, "]"))
+  })) %>%
+  # Join the priority scores
+  left_join(prio_dict, by = c("com_char" = "char")) %>%
+  glimpse
+
+sum(lev1$prio)
+
+# adventr::submit_advent(answer = 8394, day = 3, year = 2022, level = 1)
+```
+
+## Level 2
+
+```{r}
+lev2 <- tibble::tibble(str) %>%
+  # Split the elves in groups of 3
+  group_split(group_id = (1:n() - 1) %/% 3) %>%
+  map_dfr(~{
+    # Take the union of the characters appearing in 
+    # 1. the first AND the second elves
+    # 2. the first AND the third elves
+    com_char <- intersect(
+      unique(str_extract_all(.x$str[1], paste0("[", .x$str[2], "]"))[[1]]),
+      unique(str_extract_all(.x$str[1], paste0("[", .x$str[3], "]"))[[1]])
+    )
+    
+    tibble::tibble(com_char)
+  }) %>%
+  # Join the priority scores
+  left_join(prio_dict, by = c("com_char" = "char")) %>%
+  glimpse
+
+
+sum(lev2$prio)
+
+# adventr::submit_advent(answer = 2413, day = 3, year = 2022, level = 2)
+```
+
+
+
