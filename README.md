@@ -7,11 +7,11 @@ This repo gathers my solutions to the [Advent of code
 2022](https://adventofcode.com/)
 
 - [Day
-  1](https://github.com/benjaminguinaudeau/advent_of_code_2022/blob/main/day_1.md)
+  1](https://github.com/benjaminguinaudeau/advent_of_code_2022/blob/main/01.md)
 - [Day
-  2](https://github.com/benjaminguinaudeau/advent_of_code_2022/blob/main/day_2.md)
+  2](https://github.com/benjaminguinaudeau/advent_of_code_2022/blob/main/02.md)
 - [Day
-  3](https://github.com/benjaminguinaudeau/advent_of_code_2022/blob/main/day_3.md)
+  3](https://github.com/benjaminguinaudeau/advent_of_code_2022/blob/main/03.md)
 
 If you tired of exporting the problem data as .csv,
 {[adventr](https://github.com/benjaminguinaudeau/adventr)} is small
